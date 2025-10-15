@@ -7,353 +7,7 @@
       autoconcepto
     </title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <style>
-      :root {
-        --bg: #0f1115;
-        --card: #161a22;
-        --ink: #e8ecf1;
-        --muted: #9aa3af;
-        --accent: #3b82f6;
-        --border: #232936;
-      }
-      html,
-      body {
-        margin: 0;
-        padding: 0;
-        background: var(--bg);
-        color: var(--ink);
-        font-family: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu,
-          "Helvetica Neue", Arial, "Noto Sans", sans-serif;
-        line-height: 1.6;
-      }
-      .wrap {
-        max-width: 900px;
-        margin: 2rem auto;
-        padding: 0 1rem;
-      }
-      header h1 {
-        margin: 0 0 0.5rem;
-        font-size: clamp(1.6rem, 3vw + 1rem, 2.2rem);
-        line-height: 1.2;
-      }
-      .meta {
-        color: var(--muted);
-        font-size: 0.95rem;
-        margin-bottom: 1rem;
-      }
-      .toolbar {
-        display: flex;
-        gap: 0.75rem;
-        flex-wrap: wrap;
-        align-items: center;
-        margin: 1rem 0 1.25rem;
-      }
-      .btn {
-        background: var(--card);
-        color: var(--ink);
-        border: 1px solid var(--border);
-        padding: 0.55rem 0.9rem;
-        border-radius: 0.6rem;
-        cursor: pointer;
-      }
-      .note {
-        color: var(--muted);
-        font-size: 0.9rem;
-      }
-
-      /* Acordeón */
-      .accordion {
-        display: grid;
-        gap: 0.75rem;
-      }
-      .item {
-        border: 1px solid var(--border);
-        border-radius: 0.8rem;
-        background: var(--card);
-        overflow: clip;
-      }
-      .trigger {
-        width: 100%;
-        text-align: left;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 0.75rem;
-        padding: 1rem 1.1rem;
-        background: transparent;
-        color: var(--ink);
-        border: none;
-        font-size: 1.05rem;
-        cursor: pointer;
-      }
-      .trigger:focus-visible {
-        outline: 2px solid var(--accent);
-        outline-offset: -2px;
-      }
-      .chev {
-        inline-size: 1rem;
-        block-size: 1rem;
-        flex: 0 0 auto;
-        transition: transform 0.2s ease;
-      }
-      .panel {
-        max-height: 0;
-        overflow: hidden;
-        transition: max-height 0.25s ease;
-        border-top: 1px solid transparent;
-        background: linear-gradient(180deg, #161a22 0%, #151925 100%);
-      }
-      .item[aria-expanded="true"] .panel {
-        border-top-color: var(--border);
-      }
-      .item[aria-expanded="true"] .chev {
-        transform: rotate(180deg);
-      }
-      .panel-inner {
-        padding: 1rem 1.1rem 1.2rem;
-      }
-      .nested {
-        margin-top: 0.75rem;
-      }
-      .nested .item {
-        background: #151a24;
-      }
-
-      /* Galería de imágenes */
-      .gallery {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        gap: 0.85rem;
-        margin-top: 0.75rem;
-      }
-      .gallery figure {
-        margin: 0;
-        background: #121722;
-        border: 1px solid var(--border);
-        border-radius: 0.6rem;
-        overflow: hidden;
-      }
-      .gallery img {
-        width: 100%;
-        height: auto;
-        display: block;
-      }
-      .gallery figcaption {
-        padding: 0.55rem 0.65rem;
-        font-size: 0.9rem;
-        color: var(--muted);
-      }
-
-      /* Lightbox */
-      .lightbox {
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.75);
-        display: none;
-        align-items: center;
-        justify-content: center;
-        z-index: 1000;
-        padding: 2rem;
-      }
-      .lightbox.open {
-        display: flex;
-      }
-      .lightbox-content {
-        max-width: min(1100px, 95vw);
-        max-height: 85vh;
-        background: #0d111a;
-        border: 1px solid var(--border);
-        border-radius: 0.8rem;
-        overflow: hidden;
-        display: grid;
-        grid-template-rows: auto 1fr auto;
-      }
-      .lightbox-header,
-      .lightbox-footer {
-        padding: 0.6rem 0.9rem;
-        color: var(--muted);
-        font-size: 0.9rem;
-      }
-      .lightbox-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 0.75rem;
-      }
-      .lightbox-body {
-        padding: 0.75rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .lightbox-body img {
-        max-width: 100%;
-        max-height: 70vh;
-        height: auto;
-        width: auto;
-        display: block;
-      }
-      .lb-btn {
-        background: var(--card);
-        color: var(--ink);
-        border: 1px solid var(--border);
-        padding: 0.4rem 0.75rem;
-        border-radius: 0.5rem;
-        cursor: pointer;
-      }
-      .lb-nav {
-        display: flex;
-        gap: 0.5rem;
-        align-items: center;
-      }
-
-      @media print {
-        body {
-          background: white;
-          color: black;
-        }
-        .btn,
-        .toolbar {
-          display: none !important;
-        }
-        .panel {
-          max-height: none !important;
-        }
-        .item {
-          page-break-inside: avoid;
-          border: 1px solid #bbb;
-        }
-      }
-      /* Evita overflow horizontal/vertical de cualquier imagen dentro de paneles */
-      .panel-inner img {
-        display: block;
-        max-width: 100%;
-        height: auto;
-      }
-
-      /* Miniaturas de la galería: contenedor seguro y recorte amable */
-      .gallery {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        gap: 0.85rem;
-        margin-top: 0.75rem;
-      }
-
-      .gallery figure {
-        margin: 0;
-        background: #121722;
-        border: 1px solid var(--border);
-        border-radius: 0.6rem;
-        overflow: hidden; /* <- clave para cortar excedentes */
-      }
-
-      /* Si querés miniaturas coherentes (mismo alto), fijá un aspect ratio */
-      .gallery figure {
-        aspect-ratio: 4 / 3; /* podés cambiar a 16/9 o 1/1 */
-      }
-
-      /* La imagen se ajusta al frame sin desbordar */
-      .gallery img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain; /* ‘cover’ para miniaturas; usa ‘contain’ si preferís contener */
-      }
-
-      /* Figcaption envuelto y sin forzar ancho */
-      .gallery figcaption {
-        padding: 0.55rem 0.65rem;
-        font-size: 0.9rem;
-        color: var(--muted);
-        word-wrap: break-word;
-        overflow-wrap: anywhere;
-      }
-
-      /* Lightbox: asegura que no se desborde de la ventana */
-      .lightbox-body img {
-        max-width: 100%;
-        max-height: 70vh;
-        height: auto;
-        width: auto;
-        object-fit: contain;
-      }
-
-      /* === Bloque video YouTube (responsive, sin overflow) === */
-      .media {
-        display: grid;
-        gap: 0.85rem;
-        margin-top: 0.75rem;
-      }
-      .media figure {
-        margin: 0;
-        background: #121722;
-        border: 1px solid var(--border);
-        border-radius: 0.6rem;
-        overflow: hidden;
-      }
-
-      .video {
-        position: relative;
-        aspect-ratio: 16 / 9; /* cambia a 4/3 o 21/9 si querés */
-        background: #000;
-      }
-
-      .video button.video-thumb {
-        all: unset;
-        position: absolute;
-        inset: 0;
-        cursor: pointer;
-        display: grid;
-        place-items: center;
-      }
-
-      .video img.thumb {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
-        filter: brightness(0.85);
-      }
-
-      .video .play {
-        position: absolute;
-        width: 78px;
-        height: 78px;
-        border-radius: 50%;
-        border: 2px solid rgba(255, 255, 255, 0.8);
-        display: grid;
-        place-items: center;
-        background: rgba(0, 0, 0, 0.35);
-      }
-      .video .play::before {
-        content: "";
-        display: block;
-        border-left: 18px solid white;
-        border-top: 12px solid transparent;
-        border-bottom: 12px solid transparent;
-        margin-left: 5px;
-      }
-
-      .video iframe {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        border: 0;
-      }
-
-      /* Caption */
-      .media figcaption {
-        padding: 0.55rem 0.65rem;
-        font-size: 0.9rem;
-        color: var(--muted);
-      }
-
-      /* Imágenes y videos pueden convivir en la misma grilla si usás .media */
-      /* .gallery,
-      .media {
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      } */
-    </style>
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <div class="wrap">
@@ -387,7 +41,7 @@
         <!-- Introducción -->
         <section class="item" aria-expanded="false">
           <button class="trigger" aria-controls="p-intro" aria-expanded="false">
-            <span>Introducción</span>
+            <h2>Introducción</h2>
             <svg class="chev" viewBox="0 0 24 24" aria-hidden="true">
               <path
                 fill="currentColor"
@@ -430,7 +84,7 @@
         <!-- Definiciones operativas -->
         <section class="item" aria-expanded="false">
           <button class="trigger" aria-controls="p-def" aria-expanded="false">
-            <span>Definiciones operativas</span>
+            <h2>Definiciones operativas</h2>
             <svg class="chev" viewBox="0 0 24 24" aria-hidden="true">
               <path
                 fill="currentColor"
@@ -472,7 +126,7 @@
         <!-- Desarrollo (acordeón padre con sub-acordeón) -->
         <section class="item" aria-expanded="false">
           <button class="trigger" aria-controls="p-des" aria-expanded="false">
-            <span>Desarrollo</span>
+            <h2>Desarrollo</h2>
             <svg class="chev" viewBox="0 0 24 24" aria-hidden="true">
               <path
                 fill="currentColor"
@@ -496,10 +150,10 @@
                     aria-controls="p-a"
                     aria-expanded="false"
                   >
-                    <span
-                      >Adolescencia como reorganización psíquica: identidad en
-                      tránsito</span
-                    >
+                    <h2>
+                      Adolescencia como reorganización psíquica: identidad en
+                      tránsito
+                    </h2>
                     <svg class="chev" viewBox="0 0 24 24" aria-hidden="true">
                       <path
                         fill="currentColor"
@@ -543,7 +197,7 @@
                     aria-controls="p-b"
                     aria-expanded="false"
                   >
-                    <span>Imagen corporal, autoconcepto y autoestima</span>
+                    <h2>Imagen corporal, autoconcepto y autoestima</h2>
                     <svg class="chev" viewBox="0 0 24 24" aria-hidden="true">
                       <path
                         fill="currentColor"
@@ -590,10 +244,10 @@
                     aria-controls="p-c"
                     aria-expanded="false"
                   >
-                    <span
-                      >Lo neurocognitivo: funciones ejecutivas y regulación
-                      afectiva</span
-                    >
+                    <h2>
+                      Lo neurocognitivo: funciones ejecutivas y regulación
+                      afectiva
+                    </h2>
                     <svg class="chev" viewBox="0 0 24 24" aria-hidden="true">
                       <path
                         fill="currentColor"
@@ -642,7 +296,7 @@
                     aria-controls="p-d"
                     aria-expanded="false"
                   >
-                    <span>Pares, expectativas y el laboratorio social</span>
+                    <h2>Pares, expectativas y el laboratorio social</h2>
                     <svg class="chev" viewBox="0 0 24 24" aria-hidden="true">
                       <path
                         fill="currentColor"
@@ -683,7 +337,7 @@
         <!-- Conclusiones -->
         <section class="item" aria-expanded="false">
           <button class="trigger" aria-controls="p-con" aria-expanded="false">
-            <span>Conclusiones</span>
+            <h2>Conclusiones</h2>
             <svg class="chev" viewBox="0 0 24 24" aria-hidden="true">
               <path
                 fill="currentColor"
@@ -731,7 +385,7 @@
         <!-- Referencias -->
         <section class="item" aria-expanded="false">
           <button class="trigger" aria-controls="p-ref" aria-expanded="false">
-            <span>Referencias</span>
+            <h2>Referencias</h2>
             <svg class="chev" viewBox="0 0 24 24" aria-hidden="true">
               <path
                 fill="currentColor"
