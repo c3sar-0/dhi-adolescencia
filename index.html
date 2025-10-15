@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>
+      Desarrollo socioemocional en las adolescencias: identidad, autoestima y
+      autoconcepto
+    </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      :root {
+        --bg: #0f1115;
+        --card: #161a22;
+        --ink: #e8ecf1;
+        --muted: #9aa3af;
+        --accent: #3b82f6;
+        --border: #232936;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu,
+          "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+        line-height: 1.6;
+      }
+      .wrap {
+        max-width: 900px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+      }
+      header h1 {
+        margin: 0 0 0.5rem;
+        font-size: clamp(1.6rem, 3vw + 1rem, 2.2rem);
+        line-height: 1.2;
+      }
+      .meta {
+        color: var(--muted);
+        font-size: 0.95rem;
+        margin-bottom: 1rem;
+      }
+      .toolbar {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        align-items: center;
+        margin: 1rem 0 1.25rem;
+      }
+      .btn {
+        background: var(--card);
+        color: var(--ink);
+        border: 1px solid var(--border);
+        padding: 0.55rem 0.9rem;
+        border-radius: 0.6rem;
+        cursor: pointer;
+      }
+      .note {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      /* Acordeón */
+      .accordion {
+        display: grid;
+        gap: 0.75rem;
+      }
+      .item {
+        border: 1px solid var(--border);
+        border-radius: 0.8rem;
+        background: var(--card);
+        overflow: clip;
+      }
+      .trigger {
+        width: 100%;
+        text-align: left;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem 1.1rem;
+        background: transparent;
+        color: var(--ink);
+        border: none;
+        font-size: 1.05rem;
+        cursor: pointer;
+      }
+      .trigger:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: -2px;
+      }
+      .chev {
+        inline-size: 1rem;
+        block-size: 1rem;
+        flex: 0 0 auto;
+        transition: transform 0.2s ease;
+      }
+      .panel {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.25s ease;
+        border-top: 1px solid transparent;
+        background: linear-gradient(180deg, #161a22 0%, #151925 100%);
+      }
+      .item[aria-expanded="true"] .panel {
+        border-top-color: var(--border);
+      }
+      .item[aria-expanded="true"] .chev {
+        transform: rotate(180deg);
+      }
+      .panel-inner {
+        padding: 1rem 1.1rem 1.2rem;
+      }
+      .nested {
+        margin-top: 0.75rem;
+      }
+      .nested .item {
+        background: #151a24;
+      }
+
+      /* Galería de imágenes */
+      .gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 0.85rem;
+        margin-top: 0.75rem;
+      }
+      .gallery figure {
+        margin: 0;
+        background: #121722;
+        border: 1px solid var(--border);
+        border-radius: 0.6rem;
+        overflow: hidden;
+      }
+      .gallery img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+      .gallery figcaption {
+        padding: 0.55rem 0.65rem;
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+
+      /* Lightbox */
+      .lightbox {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.75);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        padding: 2rem;
+      }
+      .lightbox.open {
+        display: flex;
+      }
+      .lightbox-content {
+        max-width: min(1100px, 95vw);
+        max-height: 85vh;
+        background: #0d111a;
+        border: 1px solid var(--border);
+        border-radius: 0.8rem;
+        overflow: hidden;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+      }
+      .lightbox-header,
+      .lightbox-footer {
+        padding: 0.6rem 0.9rem;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .lightbox-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      .lightbox-body {
+        padding: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .lightbox-body img {
+        max-width: 100%;
+        max-height: 70vh;
+        height: auto;
+        width: auto;
+        display: block;
+      }
+      .lb-btn {
+        background: var(--card);
+        color: var(--ink);
+        border: 1px solid var(--border);
+        padding: 0.4rem 0.75rem;
+        border-radius: 0.5rem;
+        cursor: pointer;
+      }
+      .lb-nav {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+      }
+
+      @media print {
+        body {
+          background: white;
+          color: black;
+        }
+        .btn,
+        .toolbar {
+          display: none !important;
+        }
+        .panel {
+          max-height: none !important;
+        }
+        .item {
+          page-break-inside: avoid;
+          border: 1px solid #bbb;
+        }
+      }
+      /* Evita overflow horizontal/vertical de cualquier imagen dentro de paneles */
+      .panel-inner img {
+        display: block;
+        max-width: 100%;
+        height: auto;
+      }
+
+      /* Miniaturas de la galería: contenedor seguro y recorte amable */
+      .gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 0.85rem;
+        margin-top: 0.75rem;
+      }
+
+      .gallery figure {
+        margin: 0;
+        background: #121722;
+        border: 1px solid var(--border);
+        border-radius: 0.6rem;
+        overflow: hidden; /* <- clave para cortar excedentes */
+      }
+
+      /* Si querés miniaturas coherentes (mismo alto), fijá un aspect ratio */
+      .gallery figure {
+        aspect-ratio: 4 / 3; /* podés cambiar a 16/9 o 1/1 */
+      }
+
+      /* La imagen se ajusta al frame sin desbordar */
+      .gallery img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain; /* ‘cover’ para miniaturas; usa ‘contain’ si preferís contener */
+      }
+
+      /* Figcaption envuelto y sin forzar ancho */
+      .gallery figcaption {
+        padding: 0.55rem 0.65rem;
+        font-size: 0.9rem;
+        color: var(--muted);
+        word-wrap: break-word;
+        overflow-wrap: anywhere;
+      }
+
+      /* Lightbox: asegura que no se desborde de la ventana */
+      .lightbox-body img {
+        max-width: 100%;
+        max-height: 70vh;
+        height: auto;
+        width: auto;
+        object-fit: contain;
+      }
+
+      /* === Bloque video YouTube (responsive, sin overflow) === */
+      .media {
+        display: grid;
+        gap: 0.85rem;
+        margin-top: 0.75rem;
+      }
+      .media figure {
+        margin: 0;
+        background: #121722;
+        border: 1px solid var(--border);
+        border-radius: 0.6rem;
+        overflow: hidden;
+      }
+
+      .video {
+        position: relative;
+        aspect-ratio: 16 / 9; /* cambia a 4/3 o 21/9 si querés */
+        background: #000;
+      }
+
+      .video button.video-thumb {
+        all: unset;
+        position: absolute;
+        inset: 0;
+        cursor: pointer;
+        display: grid;
+        place-items: center;
+      }
+
+      .video img.thumb {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        filter: brightness(0.85);
+      }
+
+      .video .play {
+        position: absolute;
+        width: 78px;
+        height: 78px;
+        border-radius: 50%;
+        border: 2px solid rgba(255, 255, 255, 0.8);
+        display: grid;
+        place-items: center;
+        background: rgba(0, 0, 0, 0.35);
+      }
+      .video .play::before {
+        content: "";
+        display: block;
+        border-left: 18px solid white;
+        border-top: 12px solid transparent;
+        border-bottom: 12px solid transparent;
+        margin-left: 5px;
+      }
+
+      .video iframe {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        border: 0;
+      }
+
+      /* Caption */
+      .media figcaption {
+        padding: 0.55rem 0.65rem;
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+
+      /* Imágenes y videos pueden convivir en la misma grilla si usás .media */
+      /* .gallery,
+      .media {
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      } */
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <h1>
+          Desarrollo socioemocional en las adolescencias: identidad, autoestima
+          y autoconcepto
+        </h1>
+        <div class="meta">
+          Calandria C. <br />IFD San Ramón <br />Desarrollo Humano Integral
+          <br />Prof. Tagliani J. <br />15 de octubre de 2025
+        </div>
+      </header>
+
+      <div class="toolbar">
+        <button id="toggleAll" class="btn" type="button">Expandir todo</button>
+        <button id="printBtn" class="btn" type="button">
+          Imprimir / Guardar como PDF
+        </button>
+        <span class="note"
+          >Tip: clic en cada título para abrir/cerrar su contenido.</span
+        >
+      </div>
+
+      <main
+        class="accordion"
+        id="accordion"
+        role="region"
+        aria-label="Contenido del informe"
+      >
+        <!-- Introducción -->
+        <section class="item" aria-expanded="false">
+          <button class="trigger" aria-controls="p-intro" aria-expanded="false">
+            <span>Introducción</span>
+            <svg class="chev" viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                fill="currentColor"
+                d="M12 15.5 5 8.5l1.4-1.4L12 12.7l5.6-5.6L19 8.5z"
+              />
+            </svg>
+          </button>
+          <div id="p-intro" class="panel" role="region">
+            <div class="panel-inner">
+              <p>
+                El desarrollo socioemocional en la adolescencia implica una
+                reorganización profunda de la identidad, la autoestima y el
+                autoconcepto. No se reduce a “cambios hormonales”, sino que
+                supone duelos por posiciones infantiles, una reconstrucción de
+                la imagen corporal y la maduración de circuitos neurocognitivos
+                que sostienen la autorregulación. Desde un enfoque integrador,
+                la crisis adolescente puede entenderse como una oportunidad de
+                crecimiento si se acompaña con tiempos psíquicos adecuados,
+                validación social y desafíos graduales que fortalezcan la
+                autoeficacia.
+              </p>
+
+              <!-- Galería de la Introducción (opcional) -->
+              <div
+                class="gallery"
+                id="gal-intro"
+                aria-label="Imágenes: Introducción"
+              >
+                <!-- ejemplo directo en HTML -->
+                <!--
+              <figure>
+                <img src="images/intro1.jpg" alt="…" loading="lazy" decoding="async">
+                <figcaption>Descripción/cita breve.</figcaption>
+              </figure>
+              --></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Definiciones operativas -->
+        <section class="item" aria-expanded="false">
+          <button class="trigger" aria-controls="p-def" aria-expanded="false">
+            <span>Definiciones operativas</span>
+            <svg class="chev" viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                fill="currentColor"
+                d="M12 15.5 5 8.5l1.4-1.4L12 12.7l5.6-5.6L19 8.5z"
+              />
+            </svg>
+          </button>
+          <div id="p-def" class="panel" role="region">
+            <div class="panel-inner">
+              <p>
+                <strong>Identidad:</strong> continuidad del yo a través del
+                cambio; se negocia entre pérdidas, nuevas identificaciones y
+                validaciones externas. En la adolescencia, se reactualiza el
+                proceso de individuación y se reconfigura el ideal del Yo
+                (Kesternberg, s.f.).
+              </p>
+              <p>
+                <strong>Autoconcepto:</strong> conjunto de creencias y
+                descripciones sobre uno mismo; se recalibra con la nueva imagen
+                corporal, los logros y los comentarios de pares y adultos.
+              </p>
+              <p>
+                <strong>Autoestima:</strong> fluctúa según la integración entre
+                cuerpo cambiante, metas y vínculos, y depende de la
+                autorregulación sostenida por funciones ejecutivas en
+                maduración.
+              </p>
+
+              <!-- Galería de Definiciones (opcional) -->
+              <div
+                class="gallery"
+                id="gal-def"
+                aria-label="Imágenes: Definiciones operativas"
+              ></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Desarrollo (acordeón padre con sub-acordeón) -->
+        <section class="item" aria-expanded="false">
+          <button class="trigger" aria-controls="p-des" aria-expanded="false">
+            <span>Desarrollo</span>
+            <svg class="chev" viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                fill="currentColor"
+                d="M12 15.5 5 8.5l1.4-1.4L12 12.7l5.6-5.6L19 8.5z"
+              />
+            </svg>
+          </button>
+          <div id="p-des" class="panel" role="region">
+            <div class="panel-inner">
+              <p></p>
+
+              <div
+                class="accordion nested"
+                role="region"
+                aria-label="Apartados del desarrollo"
+              >
+                <!-- A -->
+                <section class="item" aria-expanded="false">
+                  <button
+                    class="trigger"
+                    aria-controls="p-a"
+                    aria-expanded="false"
+                  >
+                    <span
+                      >Adolescencia como reorganización psíquica: identidad en
+                      tránsito</span
+                    >
+                    <svg class="chev" viewBox="0 0 24 24" aria-hidden="true">
+                      <path
+                        fill="currentColor"
+                        d="M12 15.5 5 8.5l1.4-1.4L12 12.7l5.6-5.6L19 8.5z"
+                      />
+                    </svg>
+                  </button>
+                  <div id="p-a" class="panel" role="region">
+                    <div class="panel-inner">
+                      <p>
+                        La adolescencia marca una cesura: se pierden objetos y
+                        posiciones infantiles y se inauguran nuevas formas de
+                        ser-con-otros. Elaborar estos duelos —incluida la
+                        renuncia a la bisexualidad infantil y la revisión de
+                        idealizaciones parentales— permite restituir continuidad
+                        del yo en una etapa de intensas transformaciones. En la
+                        línea de Kesternberg, la crisis no es patológica por sí
+                        misma: puede ser vivida como decepción o como conquista
+                        según cómo el sujeto procese la brecha entre ideales y
+                        realidad. La noción de regresión al servicio del
+                        desarrollo ayuda a comprender oscilaciones entre lo
+                        infantil y lo adulto sin patologizarlas; retrocesos
+                        transitorios permiten re-trabajar tareas previas y
+                        sostener una narrativa identitaria más integrada
+                        (Amorín, 2008).
+                      </p>
+                      <!-- Galería de A -->
+                      <div
+                        class="gallery"
+                        id="gal-a"
+                        aria-label="Imágenes: Sección A"
+                      ></div>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- B -->
+                <section class="item" aria-expanded="false">
+                  <button
+                    class="trigger"
+                    aria-controls="p-b"
+                    aria-expanded="false"
+                  >
+                    <span>Imagen corporal, autoconcepto y autoestima</span>
+                    <svg class="chev" viewBox="0 0 24 24" aria-hidden="true">
+                      <path
+                        fill="currentColor"
+                        d="M12 15.5 5 8.5l1.4-1.4L12 12.7l5.6-5.6L19 8.5z"
+                      />
+                    </svg>
+                  </button>
+                  <div id="p-b" class="panel" role="region">
+                    <div class="panel-inner">
+                      <p>
+                        La pubertad obliga a reconstruir la imagen corporal. El
+                        cuerpo, hiperinvestido narcisísticamente, se vuelve una
+                        ‘pantalla’ donde se proyectan ideales y temores;
+                        cualquier rasgo físico puede leerse como ‘prueba’ de
+                        adecuación o inadecuación, con efectos directos en el
+                        autoconcepto y la autoestima. Lillo subraya la
+                        vulnerabilidad a la aprobación/desaprobación y la
+                        comparación con una imagen corporal ideal, núcleo de
+                        sentimientos de eficacia o humillación (Lillo, 2002).
+                        Asimismo, pueden aparecer desfasajes entre maduración
+                        física y psíquica —cuerpo aparentemente adulto con
+                        recursos psíquicos aún en latencia, o a la inversa— que
+                        complican la integración del autoconcepto (Lillo, 2002).
+                      </p>
+                      <!-- Galería de B -->
+                      <div
+                        class="gallery"
+                        id="gal-b"
+                        aria-label="Imágenes: Sección B"
+                      ></div>
+                      <div
+                        class="media"
+                        id="media-b"
+                        aria-label="Multimedia: Sección B"
+                      ></div>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- C -->
+                <section class="item" aria-expanded="false">
+                  <button
+                    class="trigger"
+                    aria-controls="p-c"
+                    aria-expanded="false"
+                  >
+                    <span
+                      >Lo neurocognitivo: funciones ejecutivas y regulación
+                      afectiva</span
+                    >
+                    <svg class="chev" viewBox="0 0 24 24" aria-hidden="true">
+                      <path
+                        fill="currentColor"
+                        d="M12 15.5 5 8.5l1.4-1.4L12 12.7l5.6-5.6L19 8.5z"
+                      />
+                    </svg>
+                  </button>
+                  <div id="p-c" class="panel" role="region">
+                    <div class="panel-inner">
+                      <p>
+                        La maduración de la corteza prefrontal —vinculada con
+                        planificación, inhibición y flexibilidad— es
+                        relativamente tardía respecto de los sistemas
+                        límbico-motivacionales, lo que produce un desbalance
+                        transitorio: alta reactividad emocional y sensibilidad a
+                        las recompensas sociales con controles ejecutivos aún en
+                        consolidación (El cerebro adolescente, 2025). Las
+                        funciones ejecutivas básicas —memoria de trabajo,
+                        control inhibitorio y flexibilidad cognitiva— organizan
+                        la conducta orientada a metas, sostienen la regulación
+                        afectiva y, por extensión, la vivencia de autoeficacia
+                        que alimenta la autoestima (El cerebro adolescente,
+                        2025). En educación, esto se traduce en la utilidad de
+                        andamiajes graduales y tareas con sentido para entrenar
+                        estas funciones.
+                      </p>
+                      <!-- Galería de C -->
+                      <div
+                        class="gallery"
+                        id="gal-c"
+                        aria-label="Imágenes: Sección C"
+                      ></div>
+                      <div
+                        class="media"
+                        id="media-c"
+                        aria-label="Multimedia: Sección B"
+                      ></div>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- D -->
+                <section class="item" aria-expanded="false">
+                  <button
+                    class="trigger"
+                    aria-controls="p-d"
+                    aria-expanded="false"
+                  >
+                    <span>Pares, expectativas y el laboratorio social</span>
+                    <svg class="chev" viewBox="0 0 24 24" aria-hidden="true">
+                      <path
+                        fill="currentColor"
+                        d="M12 15.5 5 8.5l1.4-1.4L12 12.7l5.6-5.6L19 8.5z"
+                      />
+                    </svg>
+                  </button>
+                  <div id="p-d" class="panel" role="region">
+                    <div class="panel-inner">
+                      <p>
+                        Los grupos de pares incrementan la exposición a
+                        recompensas sociales y a la evaluación por otros. Esto
+                        puede potenciar la búsqueda de novedad o riesgo, pero
+                        también habilita validaciones y aprendizajes
+                        cooperativos cruciales para la autoestima. La brecha
+                        entre ideales y oportunidades efectivas —señalada por
+                        Kesternberg— puede derivar en decepción o hiperlatencia
+                        si la ‘nueva vida’ imaginada no encuentra escenas donde
+                        realizarse (Kesternberg, s.f.). Diseñar climas de
+                        reconocimiento y prácticas de feedback no comparativo
+                        reduce la vulnerabilidad narcisista y favorece
+                        autoconceptos más realistas.
+                      </p>
+                      <!-- Galería de D -->
+                      <div
+                        class="gallery"
+                        id="gal-d"
+                        aria-label="Imágenes: Sección D"
+                      ></div>
+                    </div>
+                  </div>
+                </section>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Conclusiones -->
+        <section class="item" aria-expanded="false">
+          <button class="trigger" aria-controls="p-con" aria-expanded="false">
+            <span>Conclusiones</span>
+            <svg class="chev" viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                fill="currentColor"
+                d="M12 15.5 5 8.5l1.4-1.4L12 12.7l5.6-5.6L19 8.5z"
+              />
+            </svg>
+          </button>
+          <div id="p-con" class="panel" role="region">
+            <div class="panel-inner">
+              <p>
+                El desarrollo socioemocional adolescente es una obra abierta
+                donde identidad, autoconcepto y autoestima se co-construyen
+                entre el cuerpo que cambia, un cerebro que madura, los otros
+                significativos y los propios ideales. En resumen:
+              </p>
+              <p>
+                - Entrenar funciones ejecutivas con desafíos graduados y
+                significativos fortalece la autorregulación y la autoeficacia
+                (El cerebro adolescente, 2025).
+              </p>
+              <p>
+                - Cuidar el clima entre pares mediante feedback no comparativo y
+                reconocimiento reduce la vulnerabilidad narcisista (Lillo,
+                2002).
+              </p>
+              <p>
+                - Integrar una alfabetización corporal que nombre cambios sin
+                catastrofismo favorece autoconceptos más realistas (Lillo,
+                2002).
+              </p>
+              <p></p>
+              - Evitar presionar definiciones identitarias prematuras y
+              acompañar procesos con tiempos psíquicos adecuados (Kesternberg,
+              s.f.; Amorín, 2008).
+              <!-- Galería Conclusiones (opcional) -->
+              <div
+                class="gallery"
+                id="gal-con"
+                aria-label="Imágenes: Conclusiones"
+              ></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Referencias -->
+        <section class="item" aria-expanded="false">
+          <button class="trigger" aria-controls="p-ref" aria-expanded="false">
+            <span>Referencias</span>
+            <svg class="chev" viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                fill="currentColor"
+                d="M12 15.5 5 8.5l1.4-1.4L12 12.7l5.6-5.6L19 8.5z"
+              />
+            </svg>
+          </button>
+          <div id="p-ref" class="panel" role="region">
+            <div class="panel-inner">
+              <p>
+                Referencias Amorín, A. (2008). Apuntes para una posible
+                Psicología Evolutiva. Psicolibros Waslala. <br />Kesternberg, E.
+                (s.f.). De la decepción a la conquista. <br />Lillo Espinosa, A.
+                (2002.). Crecimiento y comportamiento en la adolescencia.
+                <br />Beltrán, S.. Kemp, N.. Urbina, G.. Alonso, L.. (2025). El
+                cerebro adolescente y sus dificultades asociadas a las conductas
+                violentas. Astra Editorial.
+              </p>
+              <!-- Galería Referencias (si querés imágenes de portadas) -->
+              <div
+                class="gallery"
+                id="gal-ref"
+                aria-label="Portadas / imágenes de referencias"
+              ></div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- Lightbox -->
+    <div
+      class="lightbox"
+      id="lightbox"
+      aria-modal="true"
+      role="dialog"
+      aria-label="Vista de imagen ampliada"
+    >
+      <div class="lightbox-content">
+        <div class="lightbox-header">
+          <span id="lb-title">Imagen</span>
+          <div class="lb-nav">
+            <button
+              class="lb-btn"
+              id="lb-prev"
+              type="button"
+              aria-label="Anterior"
+            >
+              ◀
+            </button>
+            <button
+              class="lb-btn"
+              id="lb-next"
+              type="button"
+              aria-label="Siguiente"
+            >
+              ▶
+            </button>
+            <button
+              class="lb-btn"
+              id="lb-close"
+              type="button"
+              aria-label="Cerrar"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+        <div class="lightbox-body">
+          <img id="lb-img" alt="" />
+        </div>
+        <div class="lightbox-footer" id="lb-caption"></div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
