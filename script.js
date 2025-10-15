@@ -1,3 +1,5 @@
+const PDF_PATH = "docs/informe.pdf";
+
 /* ===== Acordeón con alturas dinámicas (soporta anidado) ===== */
 function setOpen(item, open) {
   const trigger = item.querySelector(":scope > .trigger");
@@ -71,9 +73,16 @@ document.getElementById("toggleAll").addEventListener("click", () => {
   toggleAll(!allAreOpen());
   refreshToggleAllLabel();
 });
-document
-  .getElementById("printBtn")
-  .addEventListener("click", () => window.print());
+document.getElementById("printBtn").addEventListener("click", (e) => {
+  e.preventDefault();
+  // Crea y dispara un <a download>
+  const a = document.createElement("a");
+  a.href = PDF_PATH;
+  a.download = "Informe_Desarrollo_Socioemocional.pdf"; // nombre sugerido
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+});
 window.addEventListener("resize", () => {
   document
     .querySelectorAll('.accordion .item[aria-expanded="true"]')
